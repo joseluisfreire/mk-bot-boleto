@@ -1,0 +1,15 @@
+{
+  "name": "mk-bot-boleto",
+  "version": "2.3.0",
+  "description": "Bot de boleto para MK-AUTH",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.2"
+  }
+}
+
