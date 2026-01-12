@@ -62,4 +62,65 @@ MKAUTH_CLIENT_SECRET=seu_client_secret_aqui
 EVOLUTION_API_URL=http://evolution-api:7070
 EVOLUTION_INSTANCE_NAME=minha_instancia
 EVOLUTION_APIKEY=sua_chave_da_evolution_aqui
+```
+Endpoints
+Webhook do Evolution
+POST /webhook/evolution
 
+Configure no Evolution o webhook para apontar para:
+
+```
+http://IP-OU-HOST-DO-BOT:3000/webhook/evolution
+```
+Fluxos principais:
+
+boleto / pix / fatura
+
+Busca cliente pelos últimos 9 dígitos do número de WhatsApp.
+
+Se não achar, pergunta CPF/CNPJ do titular e consulta títulos.
+
+cliente / meu plano
+
+Busca cliente pelos últimos 9 dígitos do número de WhatsApp e responde com dados do plano.
+
+Healthcheck
+GET /health
+
+Retorna JSON com status e tag da imagem:
+
+json
+{
+  "ok": true,
+  "imagetag": "joseluisfreire/mk-bot-boleto:v2.3.0",
+  "developer": "https://hub.docker.com/u/joseluisfreire",
+  "message": "config evolution webhook http://ip-do-bot:3000/webhook/evolution",
+  "timestamp": "2026-01-11T23:19:44.000Z"
+}
+[file:119]
+
+Rodando com Docker
+Usando a imagem pública
+```
+docker run -d \
+  --name mk-bot-boleto \
+  -p 3000:3000 \
+  --env-file .env \
+  joseluisfreire/mk-bot-boleto:v2.3.0
+```
+Certifique-se de que o container consegue acessar o MK-AUTH e o Evolution API pela rede configurada.
+
+Build local
+```
+docker build -t joseluisfreire/mk-bot-boleto:v2.3.0 .
+```
+Ou com nome próprio:
+```
+docker build -t SEUUSUARIO/mk-bot-boleto:latest .
+```
+Notas de implementação
+JWT para MK-AUTH é gerado on-demand a cada fluxo, usando Basic Auth na raiz da API.
+
+A URL do boleto é montada com base em MKAUTH_PUBLIC_URL, adicionando /boleto/boleto.hhvm com titulo e contrato na query string. [file:119]
+
+O bot ignora mensagens de grupos (@g.us) e mensagens sem texto (áudio, status etc.).
